@@ -4,13 +4,17 @@ import Card from 'components/Card/Card'
 
 interface Props {
   title: string
+  icon1?: string | JSX.Element
+  uniticon?: string | JSX.Element
   primary?: boolean
   width?: string | number
   height?: string | number
+  gap?: string | number
   value?: string
   subValue?: string
   unit?: string
   fontSize?: string
+  unitFontSize?: string
   gray?: boolean
   rate?: string
   actions?: React.ReactNode
@@ -18,7 +22,24 @@ interface Props {
 }
 
 export default function NumericalCard(props: Props) {
-  const { title, primary, value, subValue, unit, fontSize, gray, width, height, rate, actions, children } = props
+  const {
+    title,
+    icon1,
+    uniticon,
+    primary,
+    value,
+    subValue,
+    unit,
+    fontSize,
+    gray,
+    width,
+    height,
+    gap,
+    rate,
+    actions,
+    children,
+    unitFontSize
+  } = props
   const theme = useTheme()
 
   return (
@@ -27,20 +48,23 @@ export default function NumericalCard(props: Props) {
       <Box
         sx={{
           padding: '20px 24px 28px',
-          gap: '28px',
+          gap: gap || '28px',
           height: height || '132px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between'
         }}
       >
-        <Box display="flex">
-          <Typography
-            variant="inherit"
-            color={primary ? theme.palette.primary.contrastText : theme.palette.text.secondary}
-          >
-            {title}
-          </Typography>
+        <Box display="flex" flexDirection="column">
+          <Box display="flex" justifyContent="space-between">
+            <Typography
+              variant="inherit"
+              color={primary ? theme.palette.primary.contrastText : theme.palette.text.secondary}
+            >
+              {title}
+            </Typography>
+            {icon1}
+          </Box>
           {rate && (
             <Box
               sx={{
@@ -81,10 +105,17 @@ export default function NumericalCard(props: Props) {
             >
               {value}
             </Typography>
-            {unit && <Typography sx={{ fontSize: 16, fontWeight: 700, ml: 4, lineHeight: 1 }}>{unit}</Typography>}
+            {unit && (
+              <Box display="block">
+                {uniticon}
+                <Typography sx={{ fontSize: unitFontSize || 16, fontWeight: 700, ml: 4, lineHeight: 1 }}>
+                  {unit}
+                </Typography>
+              </Box>
+            )}
           </Box>
           {subValue && <Typography sx={{ fontSize: 12, fontWeight: 400, opacity: 0.5 }}>{subValue}</Typography>}
-          <Box mt={20}>{actions}</Box>
+          {actions && <Box mt={20}>{actions}</Box>}
         </Box>
       </Box>
     </Card>

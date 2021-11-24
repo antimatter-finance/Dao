@@ -1,4 +1,16 @@
-import { TableContainer, TableHead, TableCell, TableRow, TableBody, Box, Typography, styled } from '@mui/material'
+import {
+  TableContainer,
+  TableHead,
+  TableCell,
+  TableRow,
+  TableBody,
+  Box,
+  Typography,
+  styled,
+  TableFooter
+} from '@mui/material'
+import PaginationView from 'components/Pagination'
+import { useState } from 'react'
 import useBreakpoint from '../../hooks/useBreakpoint'
 
 const Profile = styled('div')(`
@@ -67,7 +79,8 @@ const StyledTableHead = styled(TableHead)(({ theme }) => ({
     },
     '&:last-child': {
       paddingRight: 20,
-      borderTopRightRadius: 8
+      borderTopRightRadius: 8,
+      textAlign: 'end'
     }
   }
 }))
@@ -88,7 +101,8 @@ const StyledTableRow = styled(TableRow)({
     '&:last-child': {
       padding: '14px 20px',
       borderTopRightRadius: 8,
-      borderBottomRightRadius: 8
+      borderBottomRightRadius: 8,
+      textAlign: 'end'
     }
   },
   '&:hover': {
@@ -122,6 +136,7 @@ const CardRow = styled('div')(`
 
 export default function Table({ header, rows }: { header: string[]; rows: (string | number | JSX.Element)[][] }) {
   const matches = useBreakpoint()
+  const [curPage, setCurPage] = useState(4)
   return (
     <>
       {matches ? (
@@ -161,6 +176,15 @@ export default function Table({ header, rows }: { header: string[]; rows: (strin
                 </StyledTableRow>
               ))}
             </TableBody>
+            <TableFooter>
+              <PaginationView
+                count={20}
+                page={curPage}
+                setPage={num => {
+                  setCurPage(num)
+                }}
+              />
+            </TableFooter>
           </table>
         </StyledTableContainer>
       )}

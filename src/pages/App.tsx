@@ -13,7 +13,8 @@ import { ModalProvider } from 'context/ModalContext'
 import { routes } from 'constants/routes'
 import Stake from './Stake'
 import Bond from './Bond'
-import ComingSoonMoadal from 'components/Modal/ComingSoonModal'
+import MyAccount from './MyAccount'
+import ComingSoonModal from 'components/Modal/ComingSoonModal'
 
 const AppWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -55,7 +56,7 @@ export default function App() {
     <Suspense fallback={null}>
       <ModalProvider>
         <AppWrapper id="app">
-          <ComingSoonMoadal />
+          <ComingSoonModal />
           <ContentWrapper>
             <Header />
             <BodyWrapper id="body">
@@ -69,6 +70,7 @@ export default function App() {
                   <Route exact strict path={routes.stake} component={Stake} />
                   <Route exact strict path={routes.bond} component={Bond} />
                   <Route exact strict path={routes.bridge} component={Bridge} />
+                  <Route exact strict path={routes.myaccount} component={MyAccount} />
                   <Route path="/">
                     <Redirect to={routes.dashboard} />
                   </Route>
