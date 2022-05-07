@@ -62,7 +62,7 @@ export const Tabs: { tag: string; tabs: Tab[] }[] = [
     tabs: [
       {
         title: 'Governance',
-        link: 'https://governance.antimatter.finance/',
+        link: 'https://gov.antimatter.finance',
         icon: <GovernanceIcon className="filledSvg" />
       },
       { title: 'Docs', link: 'https://docs.antimatter.finance/ ', icon: <DocsIcon /> },
