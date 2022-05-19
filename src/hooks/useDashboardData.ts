@@ -206,9 +206,9 @@ export function useDualinvestDashboardData() {
       const res = await Axios.get('https://dualinvest-api.antimatter.finance/web/getDashboard')
       const data = res.data.data
       setDualData({
-        totalBtcDeposit: Number(data.totalBtcDeposit),
-        totalUsdtDeposit: Number(data.totalUsdtDeposit),
-        totalInvestAmount: Number(data.totalInvestAmount)
+        totalBtcDeposit: data?.totalBtcDeposit ? Number(data.totalBtcDeposit) : 0,
+        totalUsdtDeposit: data?.totalBtcDeposit ? Number(data.totalUsdtDeposit) : 0,
+        totalInvestAmount: data?.totalBtcDeposit ? Number(data.totalInvestAmount) : 0
       })
     })()
   }, [])
