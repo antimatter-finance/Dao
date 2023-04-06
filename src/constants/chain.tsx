@@ -1,5 +1,6 @@
 import { Chain } from 'models/chain'
 import { ReactComponent as ETH } from 'assets/svg/eth_logo.svg'
+import MatterUrl from 'assets/images/favicon.png'
 import EthUrl from 'assets/svg/eth_logo.svg'
 
 export enum ChainId {
@@ -7,7 +8,8 @@ export enum ChainId {
   ROPSTEN = 3,
   RINKEBY = 4,
   GÖRLI = 5,
-  KOVAN = 42
+  KOVAN = 42,
+  MATTER = 20221
 }
 
 export const ChainList = [
@@ -18,6 +20,14 @@ export const ChainList = [
     name: 'ETH Network',
     id: ChainId.MAINNET,
     hex: '0x1'
+  },
+  {
+    icon: '',
+    logo: MatterUrl,
+    symbol: 'Matter',
+    name: 'Antimatter B2 Network',
+    id: ChainId.MATTER,
+    hex: '0x4efd'
   },
   {
     icon: <ETH />,
@@ -34,6 +44,14 @@ export const ChainList = [
     name: 'Rinkeby Testnet',
     id: ChainId.RINKEBY,
     hex: '0x4'
+  },
+  {
+    icon: <ETH />,
+    logo: EthUrl,
+    symbol: 'Goerli',
+    name: 'Goerli Testnet',
+    id: ChainId.GÖRLI,
+    hex: '0x5'
   },
   {
     icon: <ETH />,
@@ -108,5 +126,27 @@ export const SUPPORTED_NETWORKS: {
     },
     rpcUrls: ['https://kovan.infura.io/v3/'],
     blockExplorerUrls: ['https://kovan.etherscan.io/']
+  },
+  [ChainId.GÖRLI]: {
+    chainId: '0x5',
+    chainName: 'Goerli',
+    nativeCurrency: {
+      name: 'Goerli ETH',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    rpcUrls: ['https://goerli.infura.io/v3/'],
+    blockExplorerUrls: ['https://goerli.etherscan.io/']
+  },
+  [ChainId.MATTER]: {
+    chainId: '0x4efd',
+    chainName: 'b2',
+    nativeCurrency: {
+      name: 'Antimatter B2 Network',
+      symbol: 'Matter',
+      decimals: 18
+    },
+    rpcUrls: ['https://bastest-rpc.antimatter.finance/'],
+    blockExplorerUrls: ['https://bastest-explorer.antimatter.finance/']
   }
 }

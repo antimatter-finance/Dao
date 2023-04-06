@@ -105,6 +105,7 @@
     "decimal.js-light": "^2.5.1",
     "jsbi": "^4.0.0",
     "lightweight-charts": "^3.7.0",
+    "react-ga4": "^1.4.1",
     "toformat": "^2.0.0"
   }
 }

@@ -8,6 +8,7 @@ interface Props {
   fromChain: Chain | null
   toChain: Chain | null
   height?: string | number
+  toSwitch?: () => void
 }
 
 const Label = styled(Typography)(({ theme }) => ({
@@ -17,7 +18,7 @@ const Label = styled(Typography)(({ theme }) => ({
 }))
 
 export default function ChainSwitch(props: Props) {
-  const { fromChain, toChain, height } = props
+  const { fromChain, toChain, height, toSwitch } = props
   const theme = useTheme()
 
   return (
@@ -69,6 +70,7 @@ export default function ChainSwitch(props: Props) {
           </OutlinedCard>
         </Box>
         <Box
+          onClick={toSwitch}
           sx={{
             position: 'absolute',
             left: '50%',

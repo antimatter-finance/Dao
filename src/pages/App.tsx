@@ -13,7 +13,7 @@ import { ModalProvider } from 'context/ModalContext'
 import { routes } from 'constants/routes'
 import Stake from './Stake'
 import Bond from './Bond'
-import ComingSoonMoadal from 'components/Modal/ComingSoonModal'
+// import ComingSoonMoadal from 'components/Modal/ComingSoonModal'
 import Spinner from 'components/Spinner'
 import NoService from './NoService'
 import { fetchLocation } from '../utils/fetch/location'
@@ -60,7 +60,7 @@ export default function App() {
     <Suspense fallback={null}>
       <ModalProvider>
         <AppWrapper id="app">
-          <ComingSoonMoadal />
+          {/* <ComingSoonMoadal /> */}
           <ContentWrapper>
             <LocatoinVerification resource={resource}>
               <Header />

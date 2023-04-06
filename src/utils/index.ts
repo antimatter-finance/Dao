@@ -6,6 +6,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { CurrencyAmount, Percent } from '../constants/token/fractions'
 import JSBI from 'jsbi'
 import { ChainId } from '../constants/chain'
+import supportContractAddress from 'data/supportContractAddress.json'
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: any): string | false {
@@ -21,7 +22,8 @@ const ETHERSCAN_PREFIXES: { [chainId in ChainId]: string } = {
   3: 'ropsten.',
   4: 'rinkeby.',
   5: 'goerli.',
-  42: 'kovan.'
+  42: 'kovan.',
+  20221: 'matter'
 }
 
 export function getEtherscanLink(
@@ -45,6 +47,15 @@ export function getEtherscanLink(
     default: {
       return `${prefix}/address/${data}`
     }
+  }
+}
+
+export function checkoutContract(address: string) {
+  const _arr = supportContractAddress as string[]
+  const isDev = process.env.NODE_ENV === 'development'
+  if (!isDev && _arr.indexOf(address.toLowerCase()) === -1) {
+    alert('There is a security problem with the contract address, please contact the administrator')
+    throw new Error('There is a security problem with the contract address, please contact the administrator')
   }
 }
 

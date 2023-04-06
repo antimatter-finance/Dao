@@ -4,8 +4,10 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { useActiveWeb3React } from '../../hooks'
 import { AppDispatch, AppState } from '../index'
-import { addTransaction } from './actions'
+import { addTransaction, addTransaction1 } from './actions'
 import { TransactionDetails } from './reducer'
+import { ChainId } from 'constants/chain'
+import { SUPPORT_PLATFORM } from 'models/platform'
 
 // helper that can take a ethers library transaction response and add it to the list of transactions
 export function useTransactionAdder(): (
@@ -32,6 +34,67 @@ export function useTransactionAdder(): (
         throw Error('No transaction hash found.')
       }
       dispatch(addTransaction({ hash, from: account, chainId, approval, summary, claim }))
+    },
+    [dispatch, chainId, account]
+  )
+}
+
+// helper that can take a ethers library transaction response and add it to the list of transactions
+export function useTransactionAdder1(): (
+  response: TransactionResponse,
+  customData?: {
+    summary?: string
+    approval?: { tokenAddress: string; spender: string }
+    claim?: { recipient: string }
+    crossChain?: {
+      bridge: SUPPORT_PLATFORM
+      fromChain: ChainId
+      toChain: ChainId
+      value: string
+      fromTXHash: string
+      toAddress: string
+      symbol: string
+      pairID?: string
+      cbridgeTransferId?: string
+    }
+  }
+) => void {
+  const { chainId, account } = useActiveWeb3React()
+  const dispatch = useDispatch<AppDispatch>()
+
+  return useCallback(
+    (
+      response: TransactionResponse,
+      {
+        summary,
+        approval,
+        claim,
+        crossChain
+      }: {
+        summary?: string
+        claim?: { recipient: string }
+        approval?: { tokenAddress: string; spender: string }
+        crossChain?: {
+          bridge: SUPPORT_PLATFORM
+          fromChain: ChainId
+          toChain: ChainId
+          value: string
+          fromTXHash: string
+          toAddress: string
+          symbol: string
+          pairID?: string
+          cbridgeTransferId?: string
+        }
+      } = {}
+    ) => {
+      if (!account) return
+      if (!chainId) return
+
+      const { hash } = response
+      if (!hash) {
+        throw Error('No transaction hash found.')
+      }
+      dispatch(addTransaction1({ hash, from: account, chainId, approval, summary, claim, crossChain }))
     },
     [dispatch, chainId, account]
   )
