@@ -11,7 +11,7 @@ export const BAST_TOKEN: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x9b99cca871be05119b2012fd4474731dd653febe', 18, 'MATTER', 'Matter'),
   [ChainId.ROPSTEN]: new Token(ChainId.ROPSTEN, '0x9b99cca871be05119b2012fd4474731dd653febe', 18, 'MATTER', 'Matter'),
   [ChainId.RINKEBY]: new Token(ChainId.MAINNET, '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', 18, 'MATTER', 'Matter'),
-  [ChainId.GÖRLI]: new Token(ChainId.MAINNET, '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', 18, 'MATTER', 'Matter'),
+  [ChainId.GÖRLI]: new Token(ChainId.GÖRLI, '0x4193F71a805eC0AeB97a0eA03Dd552a995847B1D', 18, 'MATTER', 'Matter'),
   [ChainId.KOVAN]: new Token(ChainId.MAINNET, '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', 18, 'MATTER', 'Matter'),
   [ChainId.MATTER]: new Token(ChainId.MATTER, '0x60d0769c4940cA58648C0AA34ecdf390a10F272e', 18, 'MATTER', 'Matter')
 }

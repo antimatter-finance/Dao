@@ -1,10 +1,7 @@
 import { Token, TokenAmount } from 'constants/token'
 import { useEffect, useState } from 'react'
 import { useBlockNumber } from 'state/application/hooks'
-import CBRIDGE_ABI from 'constants/abis/cbridge.json'
-import { useContract } from './useContract'
 import { fetchCbridgeEstimateAmtResult } from 'utils/fetch/cbridge'
-import { useSingleCallResult } from 'state/multicall/hooks'
 
 export function useCbridgeSwapFeeInfoResult(
   depositAddress: string | undefined,
@@ -25,9 +22,6 @@ export function useCbridgeSwapFeeInfoResult(
   >()
   const [loading, setLoading] = useState(false)
   const blockNumber = useBlockNumber()
-  const contract = useContract(depositAddress, CBRIDGE_ABI)
-  console.log(contract)
-  const minSend = useSingleCallResult(contract, 'minSend', [tokenAddress])
 
   useEffect(() => {
     if (!fromChainId || !toChainId || !destToken || !slippageTolerance || !usrAddr || !inputAmountRaw) {
@@ -43,11 +37,12 @@ export function useCbridgeSwapFeeInfoResult(
           destToken.symbol || '',
           usrAddr,
           slippageTolerance,
-          inputAmountRaw
+          inputAmountRaw,
+          true
         )) as any
         const ret = {
-          fees: new TokenAmount(destToken, res.perc_fee).add(new TokenAmount(destToken, res.base_fee)),
-          maxSlippage: res.max_slippage
+          fees: new TokenAmount(destToken, res?.data.perc_fee).add(new TokenAmount(destToken, res?.data.base_fee)),
+          maxSlippage: res?.data.max_slippage
         }
         setResult(ret)
       } catch (error) {
@@ -56,12 +51,10 @@ export function useCbridgeSwapFeeInfoResult(
       setLoading(false)
     })()
   }, [fromChainId, toChainId, usrAddr, slippageTolerance, destToken, inputAmountRaw, blockNumber])
-
   return {
-    loading: loading || minSend.loading,
+    loading: loading,
     result: {
-      ...result,
-      minAmount: minSend.result?.toString()
+      ...result
     }
   }
 }

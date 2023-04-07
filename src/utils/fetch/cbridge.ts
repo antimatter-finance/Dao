@@ -14,14 +14,16 @@ export function fetchCbridgeEstimateAmtResult(
   tokenSymbol: string,
   usrAddr: string,
   slippageTolerance: string | number,
-  amt: string
+  amt: string,
+  is_pegged: boolean
 ) {
-  return get(`https://cbridge-prod2.celer.network/v1/estimateAmt`, {
+  return get(`https://cbridge-v2-test.celer.network/v1/estimateAmt`, {
     src_chain_id: fromChainId,
     dst_chain_id: toChainId,
     token_symbol: tokenSymbol,
     usr_addr: usrAddr,
     slippage_tolerance: slippageTolerance,
-    amt
+    amt,
+    is_pegged
   })
 }

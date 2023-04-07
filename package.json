@@ -106,6 +106,8 @@
     "jsbi": "^4.0.0",
     "lightweight-charts": "^3.7.0",
     "react-ga4": "^1.4.1",
-    "toformat": "^2.0.0"
+    "toformat": "^2.0.0",
+    "web3": "^1.9.0",
+    "web3-core": "^1.9.0"
   }
 }

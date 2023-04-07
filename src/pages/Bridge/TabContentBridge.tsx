@@ -24,7 +24,6 @@ import { useUserSlippageTolerance } from 'state/user/hooks'
 import { useWalletModalToggle } from 'state/application/hooks'
 import { Dots } from 'theme/components'
 import { triggerSwitchChain } from 'utils/triggerSwitchChain'
-// import { ETHER } from 'constants/token'
 
 const ChainList = [
   {
@@ -67,7 +66,7 @@ export default function TabContentBridge() {
   const { account, chainId, library } = useActiveWeb3React()
   const { showModal, hideModal } = useModal()
   const toggleWalletModal = useWalletModalToggle()
-  const depositAddress = depositAddressList[chainId ?? 20221]
+  const depositAddress = depositAddressList[chainId ?? ChainId.MATTER]
   const { callback: depositeOnceCallback } = useCbridgeDepositeCallback(depositAddress)
   const [fromToken, setFromToken] = useState(BAST_TOKEN[ChainId.MATTER])
   const [toToken, setToToken] = useState(BAST_TOKEN[ChainId.GÖRLI])
@@ -75,16 +74,16 @@ export default function TabContentBridge() {
   const [toChain, setToChain] = useState<Chain>(ChainList[1])
 
   const walletIsCurrentChain = useMemo(() => chainId === fromChain?.id, [chainId, fromChain?.id])
-  const isETHER = useMemo(() => fromToken.chainId === 20221, [fromToken.chainId])
+  const isETHER = useMemo(() => fromToken.chainId === ChainId.MATTER, [fromToken.chainId])
 
   const fromAmount = useMemo(() => tryParseAmount(value, fromToken), [fromToken, value])
   const ethBalance = useETHBalances([account || undefined])[account || 0]
-  const nativeBalance = useCurrencyBalance(account || undefined, fromToken)
+  const nativeBalance = useCurrencyBalance(account || undefined, !isETHER ? fromToken : undefined)
 
   const fromBalance = isETHER ? ethBalance : nativeBalance
   const userSlippage = useUserSlippageTolerance()
 
-  console.log('balance', isETHER, ethBalance?.toSignificant(), fromBalance?.toSignificant())
+  console.log('balance', isETHER, ethBalance?.toSignificant(), nativeBalance?.toSignificant())
 
   const { loading: cbridgeFeeInfoLoading, result: cbridgeFeeInfo } = useCbridgeSwapFeeInfoResult(
     depositAddress,
@@ -99,17 +98,18 @@ export default function TabContentBridge() {
   const depositCallback = useCallback(() => {
     if (!account || !fromAmount || !fromToken || !fromToken.symbol) return
     const params = {
-      tokenAddress: toToken.address,
+      tokenAddress: fromToken.address,
       toChainId: toToken?.chainId,
       toAccount: account,
       amount: fromAmount,
       isETHER,
       fromChainId: fromToken.chainId,
       symbol: fromToken.symbol,
-      moreData: {}
+      moreData: {
+        maxSlippage: cbridgeFeeInfo?.maxSlippage
+      }
     }
     showModal(<TransactionPendingModal />)
-
     depositeOnceCallback &&
       depositeOnceCallback(
         params.tokenAddress,
@@ -124,6 +124,7 @@ export default function TabContentBridge() {
         .then(() => {
           hideModal()
           showModal(<TransactionSubmittedModal />)
+          setValue('')
         })
         .catch(err => {
           hideModal()
@@ -134,18 +135,18 @@ export default function TabContentBridge() {
         })
   }, [
     account,
+    cbridgeFeeInfo?.maxSlippage,
     depositeOnceCallback,
     fromAmount,
     fromToken,
     hideModal,
     isETHER,
     showModal,
-    toToken.address,
     toToken?.chainId
   ])
   const [approvalState, approveCallback] = useApproveCallback(
     isETHER ? fromBalance : tryParseAmount(value, fromBalance?.currency),
-    fromToken?.address || undefined
+    chainId ? depositAddressList[chainId] || undefined : undefined
   )
 
   const toSwitch = useCallback(() => {
@@ -228,14 +229,10 @@ export default function TabContentBridge() {
       <Box padding="22px 32px" display="grid" gap="32px" width="50%">
         <InputNumerical
           label="Amount"
-          onMax={() => {
-            setValue(fromBalance?.toSignificant() || '')
-          }}
-          balance={fromBalance?.toSignificant()}
+          onMax={() => setValue(fromBalance?.toSignificant() || '')}
+          balance={fromChain.id === chainId ? fromBalance?.toSignificant() : '-'}
           value={value}
-          onChange={e => {
-            setValue(e.target.value)
-          }}
+          onChange={e => setValue(e.target.value)}
         />
         {getActions()}
       </Box>

@@ -1,9 +1,9 @@
 import { CurrencyAmount } from 'constants/token'
 import { useActiveWeb3React } from 'hooks'
 import { useTransactionAdder1 } from 'state/transactions/hooks'
-import { calculateGasMargin, checkoutContract } from '../utils'
+import { calculateGasMargin } from '../utils'
 import { TransactionResponse } from '@ethersproject/providers'
-import ReactGA from 'react-ga4'
+// import { useGasPriceInfo } from './useGasPrice'
 import { useContract } from './useContract'
 import CBRIDGE_ABI from 'constants/abis/cbridge.json'
 import { BridgeCrossDirection, BridgeSymbiosisDirection } from '../models/platform'
@@ -53,6 +53,7 @@ export function useCbridgeDepositeCallback(
   const addTransaction1 = useTransactionAdder1()
   const contract = useContract(depositAddress, CBRIDGE_ABI)
   const { account } = useActiveWeb3React()
+  // const gasPriceInfoCallback = useGasPriceInfo()
 
   return {
     state: ContractCallbackState.VALID,
@@ -61,10 +62,10 @@ export function useCbridgeDepositeCallback(
       toChainId: number,
       toAccount: string,
       amount: CurrencyAmount,
-      isETHER: boolean,
-      fromChainId: number,
-      symbol: string,
-      moreData: MoreDataProp
+      isETHER: boolean
+      // fromChainId: number,
+      // symbol: string,
+      // moreData: MoreDataProp
     ): Promise<{ hash: string; transferId?: string; depositAddress?: string }> {
       if (!contract) {
         throw new Error('Unexpected error. Contract error')
@@ -72,66 +73,51 @@ export function useCbridgeDepositeCallback(
       if (!account) {
         throw new Error('Unexpected error. account')
       }
-      if (!moreData.maxSlippage) {
-        throw new Error('Unexpected error. maxSlippage')
-      }
-      checkoutContract(contract.address)
+      // if (!moreData.maxSlippage) {
+      //   throw new Error('Unexpected error. maxSlippage')
+      // }
 
       const timestamp = (new Date().getTime() / 1000).toFixed()
-      const method = 'transfer'
-
       if (isETHER) {
-        const args = [toAccount, amount.raw.toString(), toChainId, timestamp, moreData.maxSlippage]
+        const args = [toChainId, toAccount, timestamp]
         return contract.estimateGas
-          .sendNative(...args, { from: account, value: amount.raw.toString() })
+          .burnNative(...args, { from: account, value: amount.raw.toString() })
           .then(estimatedGasLimit => {
             return contract
-              .sendNative(...args, {
+              .burnNative(...args, {
                 gasLimit: calculateGasMargin(estimatedGasLimit),
                 from: account,
                 value: amount.raw.toString()
               })
               .then((response: TransactionResponse) => {
                 addTransaction1(response, {
-                  summary: `transfer`,
+                  summary: `Cross ${amount.toSignificant()} Matter to ${toAccount}`,
                   claim: { recipient: `${account}_transfer_ether_to${toChainId}` }
                 })
                 return response.hash
               })
               .catch((err: any) => {
-                if (err.code !== 4001) {
-                  ReactGA.event({
-                    category: `catch-${method}`,
-                    action: `${err?.error.message || ''} ${err?.message || ''} ${err?.data?.message || ''}`,
-                    label: JSON.stringify(args)
-                  })
-                }
                 throw err
               })
           })
       } else {
-        const args = [toAccount, tokenAddress, amount.raw.toString(), toChainId, timestamp, moreData.maxSlippage]
-        return contract.estimateGas.send(...args, { from: account }).then(estimatedGasLimit => {
+        const args = [tokenAddress, amount.raw.toString(), toChainId, toAccount, timestamp]
+        // const { gasLimit, gasPrice } = await gasPriceInfoCallback(contract, 'burn', args, undefined)
+        return contract.estimateGas.deposit(...args, { from: account, value: undefined }).then(estimatedGasLimit => {
           return contract
-            .send(...args, {
+            .deposit(...args, {
+              // gasPrice,
               gasLimit: calculateGasMargin(estimatedGasLimit),
               from: account
             })
             .then((response: TransactionResponse) => {
               addTransaction1(response, {
-                summary: `transfer`,
+                summary: `Cross ${amount.toSignificant()} Matter to ${toAccount}`,
                 claim: { recipient: `${account}_transfer_ether_to${toChainId}` }
               })
               return response.hash
             })
             .catch((err: any) => {
-              if (err.code !== 4001) {
-                ReactGA.event({
-                  category: `catch-${method}`,
-                  action: `${err?.error.message || ''} ${err?.message || ''} ${err?.data?.message || ''}`,
-                  label: JSON.stringify(args)
-                })
-              }
               throw err
             })
         })
@@ -142,6 +128,5 @@ export function useCbridgeDepositeCallback(
 }
 
 export function useDepositeOnceCallback(contractAddress?: string) {
-  const cbridge = useCbridgeDepositeCallback(contractAddress ?? '')
-  return cbridge.callback
+  return useCbridgeDepositeCallback(contractAddress ?? '').callback
 }
