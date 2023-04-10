@@ -18,7 +18,6 @@ import EthUrl from 'assets/svg/eth_logo.svg'
 import MatterUrl from 'assets/images/favicon.png'
 import { ChainId, ChainListMap } from 'constants/chain'
 import { useCbridgeSwapFeeInfoResult } from 'hooks/useFee'
-// import JSBI from 'jsbi'
 import { Chain } from 'models/chain'
 import { useUserSlippageTolerance } from 'state/user/hooks'
 import { useWalletModalToggle } from 'state/application/hooks'
@@ -34,6 +33,14 @@ const ChainList = [
     id: ChainId.MATTER,
     hex: '0x4efd'
   },
+  // {
+  //   icon: '',
+  //   logo: MatterUrl,
+  //   symbol: 'Matter',
+  //   name: 'Antimatter B2 Network',
+  //   id: ChainId.MATTERMAINNET,
+  //   hex: '0x7c6'
+  // },
   {
     icon: <ETH />,
     logo: EthUrl,
@@ -58,7 +65,8 @@ const depositAddressList: { [chainId in ChainId]: string } = {
   [ChainId.RINKEBY]: '',
   [ChainId.KOVAN]: '',
   [ChainId.GÖRLI]: '0xe40e60098ccf287413f4f08e39a912e7b6ce8146',
-  [ChainId.MATTER]: '0x9bb46d5100d2db4608112026951c9c965b233f4d'
+  [ChainId.MATTER]: '0x9bb46d5100d2db4608112026951c9c965b233f4d',
+  [ChainId.MATTERMAINNET]: ''
 }
 
 export default function TabContentBridge() {
@@ -75,15 +83,12 @@ export default function TabContentBridge() {
 
   const walletIsCurrentChain = useMemo(() => chainId === fromChain?.id, [chainId, fromChain?.id])
   const isETHER = useMemo(() => fromToken.chainId === ChainId.MATTER, [fromToken.chainId])
-
   const fromAmount = useMemo(() => tryParseAmount(value, fromToken), [fromToken, value])
   const ethBalance = useETHBalances([account || undefined])[account || 0]
   const nativeBalance = useCurrencyBalance(account || undefined, !isETHER ? fromToken : undefined)
 
   const fromBalance = isETHER ? ethBalance : nativeBalance
   const userSlippage = useUserSlippageTolerance()
-
-  console.log('balance', isETHER, ethBalance?.toSignificant(), nativeBalance?.toSignificant())
 
   const { loading: cbridgeFeeInfoLoading, result: cbridgeFeeInfo } = useCbridgeSwapFeeInfoResult(
     depositAddress,

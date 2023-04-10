@@ -9,7 +9,8 @@ export enum ChainId {
   RINKEBY = 4,
   GÖRLI = 5,
   KOVAN = 42,
-  MATTER = 20221
+  MATTER = 20221,
+  MATTERMAINNET = 1990
 }
 
 export const ChainList = [
@@ -28,6 +29,14 @@ export const ChainList = [
     name: 'Antimatter B2 Network',
     id: ChainId.MATTER,
     hex: '0x4efd'
+  },
+  {
+    icon: '',
+    logo: MatterUrl,
+    symbol: 'Matter',
+    name: 'Antimatter B2 Network',
+    id: ChainId.MATTERMAINNET,
+    hex: '0x7c6'
   },
   {
     icon: <ETH />,
@@ -148,5 +157,16 @@ export const SUPPORTED_NETWORKS: {
     },
     rpcUrls: ['https://bastest-rpc.antimatter.finance/'],
     blockExplorerUrls: ['https://bastest-explorer.antimatter.finance/']
+  },
+  [ChainId.MATTERMAINNET]: {
+    chainId: '0x7c6',
+    chainName: 'b2',
+    nativeCurrency: {
+      name: 'Antimatter B2 Network',
+      symbol: 'Matter',
+      decimals: 18
+    },
+    rpcUrls: ['https://rpc.antimatter.finance/'],
+    blockExplorerUrls: ['https://b2-explorer.antimatter.finance/']
   }
 }

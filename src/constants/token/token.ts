@@ -62,5 +62,12 @@ export const WETH = {
   [ChainId.RINKEBY]: new Token(ChainId.MAINNET, '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f', 18, 'WHT', 'Wrapped HT'),
   [ChainId.GÖRLI]: new Token(ChainId.MAINNET, '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f', 18, 'WHT', 'Wrapped HT'),
   [ChainId.KOVAN]: new Token(ChainId.MAINNET, '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f', 18, 'WHT', 'Wrapped HT'),
-  [ChainId.MATTER]: new Token(ChainId.MAINNET, '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f', 18, 'WHT', 'Wrapped HT')
+  [ChainId.MATTER]: new Token(ChainId.MAINNET, '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f', 18, 'WHT', 'Wrapped HT'),
+  [ChainId.MATTERMAINNET]: new Token(
+    ChainId.MATTERMAINNET,
+    '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f',
+    18,
+    'WHT',
+    'Wrapped HT'
+  )
 }
