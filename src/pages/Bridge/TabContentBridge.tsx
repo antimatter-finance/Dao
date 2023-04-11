@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import ChainSwitch from 'components/ChainSwitch/ChainSwitch'
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import InputNumerical from 'components/Input/InputNumerical'
 import Button from 'components/Button/Button'
 import { useCbridgeDepositeCallback } from 'hooks/useDepositOnceCallback'
@@ -95,7 +95,7 @@ export default function TabContentBridge() {
     fromToken.address,
     fromChain?.id ?? undefined,
     toChain?.id ?? undefined,
-    toToken,
+    fromToken,
     account,
     userSlippage[0] * 100,
     fromAmount?.raw.toString()
@@ -231,7 +231,7 @@ export default function TabContentBridge() {
       <Box width="50%" height="100%">
         <ChainSwitch fromChain={fromChain} toChain={toChain} height={148} toSwitch={toSwitch} />
       </Box>
-      <Box padding="22px 32px" display="grid" gap="32px" width="50%">
+      <Box padding="22px 32px" display="grid" gap="12px" width="50%">
         <InputNumerical
           label="Amount"
           onMax={() => setValue(fromBalance?.toSignificant() || '')}
@@ -239,6 +239,27 @@ export default function TabContentBridge() {
           value={value}
           onChange={e => setValue(e.target.value)}
         />
+        <Box display={'flex'} justifyContent={'space-between'}>
+          <Typography fontWeight={500} fontSize={12}>
+            Fee:
+          </Typography>
+          <Typography fontWeight={500} fontSize={12}>
+            {(cbridgeFeeInfo.fees && cbridgeFeeInfo.fees.toSignificant()) || '-'} MATTER
+          </Typography>
+        </Box>
+        <Box display={'flex'} justifyContent={'space-between'}>
+          <Typography fontWeight={500} fontSize={12}>
+            Receive(estimated):
+          </Typography>
+          <Typography fontWeight={500} fontSize={12}>
+            {(fromAmount &&
+              cbridgeFeeInfo.fees &&
+              fromAmount?.greaterThan(cbridgeFeeInfo.fees) &&
+              fromAmount?.subtract(cbridgeFeeInfo.fees).toSignificant()) ||
+              '-'}{' '}
+            MATTER
+          </Typography>
+        </Box>
         {getActions()}
       </Box>
     </Box>
