@@ -31,14 +31,11 @@ export default function ChainSwitch(props: Props) {
           alignItems: 'center',
           position: 'relative',
           gap: 8,
-          mt: 14
+          mt: 24
         }}
       >
         <Box width="100%">
           <Label sx={{ mb: 8 }}>Send</Label>
-        </Box>
-        <Box width="100%">
-          <Label sx={{ mb: 8 }}>To</Label>
         </Box>
       </Box>
 
@@ -46,6 +43,7 @@ export default function ChainSwitch(props: Props) {
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
+          flexDirection: 'column',
           width: '100%',
           alignItems: 'stretch',
           position: 'relative',
@@ -74,11 +72,26 @@ export default function ChainSwitch(props: Props) {
           sx={{
             position: 'absolute',
             left: '50%',
-            top: '50%',
-            transform: 'translateX(-50%) translateY(-50%)'
+            top: '43%',
+            transform: 'rotate(90deg)'
           }}
         >
           <SwitchButton />
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            width: '100%',
+            alignItems: 'center',
+            position: 'relative',
+            gap: 8,
+            mt: 20
+          }}
+        >
+          <Box width="100%">
+            <Label>To</Label>
+          </Box>
         </Box>
         <Box width="100%">
           <OutlinedCard width="100%" color={theme.textColor.text4} style={{ height: '100%' }}>

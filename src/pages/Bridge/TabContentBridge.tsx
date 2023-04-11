@@ -228,10 +228,10 @@ export default function TabContentBridge() {
 
   return (
     <Box display="flex">
-      <Box width="50%" height="100%">
-        <ChainSwitch fromChain={fromChain} toChain={toChain} height={148} toSwitch={toSwitch} />
+      <Box width="40%" height="100%">
+        <ChainSwitch fromChain={fromChain} toChain={toChain} height={82} toSwitch={toSwitch} />
       </Box>
-      <Box padding="22px 32px" display="grid" gap="12px" width="50%">
+      <Box padding="22px 32px" display="grid" gap="22px" width="60%">
         <InputNumerical
           label="Amount"
           onMax={() => setValue(fromBalance?.toSignificant() || '')}
