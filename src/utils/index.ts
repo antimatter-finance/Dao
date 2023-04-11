@@ -23,8 +23,13 @@ const ETHERSCAN_PREFIXES: { [chainId in ChainId]: string } = {
   4: 'rinkeby.',
   5: 'goerli.',
   42: 'kovan.',
-  1990: 'matter',
-  20221: 'matter'
+  1990: '',
+  20221: ''
+}
+
+const matterChainDomian: { [chainId in ChainId]?: string } = {
+  [ChainId.MATTER]: 'https://bastest-explorer.antimatter.finance',
+  [ChainId.MATTERMAINNET]: 'https://b2-explorer.antimatter.finance'
 }
 
 export function getEtherscanLink(
@@ -32,7 +37,9 @@ export function getEtherscanLink(
   data: string,
   type: 'transaction' | 'token' | 'address' | 'block'
 ): string {
-  const prefix = `https://${ETHERSCAN_PREFIXES[chainId] || ETHERSCAN_PREFIXES[1]}etherscan.io`
+  const prefix = matterChainDomian[chainId]
+    ? matterChainDomian[chainId]
+    : `https://${ETHERSCAN_PREFIXES[chainId] || ETHERSCAN_PREFIXES[1]}etherscan.io`
 
   switch (type) {
     case 'transaction': {

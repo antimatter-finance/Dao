@@ -2,16 +2,16 @@ import { useState, useCallback } from 'react'
 import { Box, Grid, useTheme } from '@mui/material'
 import NumericalCard from 'components/Card/NumericalCard'
 import ChartCard from './ChartCard'
-import BridgeCard from './BridgeCard'
+// import BridgeCard from './BridgeCard'
 import { DefaultButton } from 'components/Button/Button'
 import { useDashboardData, useDualinvestDashboardData } from 'hooks/useDashboardData'
-import { ChainList } from 'constants/chain'
+// import { ChainList } from 'constants/chain'
 import LineChart from 'components/Chart'
 import Spinner from 'components/Spinner'
 
-const data = {
-  available: '0.0'
-}
+// const data = {
+//   available: '0.0'
+// }
 
 export enum TIME_INTERVAL {
   ONE_DAY = 1,
@@ -31,7 +31,7 @@ export default function Dashboard() {
   const theme = useTheme()
   const [priceTimeInterval, setPriceTimeInterval] = useState(TIME_INTERVAL.ONE_DAY)
   // const [mktValueTimeInterval, setMktValueTimeInterval] = useState(TIME_INTERVAL.TEN_DAYS)
-  const [amount, setAmount] = useState('')
+  // const [amount, setAmount] = useState('')
 
   const {
     totalSupply,
@@ -55,13 +55,13 @@ export default function Dashboard() {
   //   setMktValueTimeInterval(option)
   // }, [])
 
-  const onMax = useCallback(() => {
-    setAmount(data.available || '')
-  }, [])
+  // const onMax = useCallback(() => {
+  //   setAmount(data.available || '')
+  // }, [])
 
-  const onChange = useCallback((e: any) => {
-    setAmount(e.target.value)
-  }, [])
+  // const onChange = useCallback((e: any) => {
+  //   setAmount(e.target.value)
+  // }, [])
 
   return (
     <Box sx={{ padding: { lg: '0 28px', xl: '0 42px 0 38px' }, maxWidth: '100%' }}>
@@ -129,7 +129,7 @@ export default function Dashboard() {
             sx={{
               width: {
                 xs: '100%',
-                md: 'calc(100% - 284px - 20px) '
+                md: 'calc(100% - 20px)'
               }
             }}
           >
@@ -182,7 +182,7 @@ export default function Dashboard() {
               </Box>
             </ChartCard>
           </Grid>
-          <Grid
+          {/* <Grid
             item
             sx={{
               width: {
@@ -198,7 +198,7 @@ export default function Dashboard() {
               onChange={onChange}
               value={amount}
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Box>
       {/* <Box sx={{ width: '100%', mt: 48 }}>
