@@ -25,48 +25,48 @@ import { Dots } from 'theme/components'
 import { triggerSwitchChain } from 'utils/triggerSwitchChain'
 
 const ChainList = [
-  {
-    icon: '',
-    logo: MatterUrl,
-    symbol: 'Matter',
-    name: 'Antimatter B2 Network',
-    id: ChainId.MATTER,
-    hex: '0x4efd'
-  },
   // {
   //   icon: '',
   //   logo: MatterUrl,
   //   symbol: 'Matter',
   //   name: 'Antimatter B2 Network',
-  //   id: ChainId.MATTERMAINNET,
-  //   hex: '0x7c6'
+  //   id: ChainId.MATTER,
+  //   hex: '0x4efd'
   // },
   {
-    icon: <ETH />,
-    logo: EthUrl,
-    symbol: 'Goerli',
-    name: 'Goerli Testnet',
-    id: ChainId.GÖRLI,
-    hex: '0x5'
-  }
+    icon: '',
+    logo: MatterUrl,
+    symbol: 'Matter',
+    name: 'Antimatter B2 Network',
+    id: ChainId.MATTERMAINNET,
+    hex: '0x7c6'
+  },
   // {
   //   icon: <ETH />,
   //   logo: EthUrl,
-  //   symbol: 'ETH',
-  //   name: 'ETH Network',
-  //   id: ChainId.MAINNET,
-  //   hex: '0x1'
+  //   symbol: 'Goerli',
+  //   name: 'Goerli Testnet',
+  //   id: ChainId.GÖRLI,
+  //   hex: '0x5'
   // }
+  {
+    icon: <ETH />,
+    logo: EthUrl,
+    symbol: 'ETH',
+    name: 'ETH Network',
+    id: ChainId.MAINNET,
+    hex: '0x1'
+  }
 ]
 
 const depositAddressList: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: '',
+  [ChainId.MAINNET]: '0x7510792A3B1969F9307F3845CE88e39578f2bAE1',
   [ChainId.ROPSTEN]: '',
   [ChainId.RINKEBY]: '',
   [ChainId.KOVAN]: '',
   [ChainId.GÖRLI]: '0xe40e60098ccf287413f4f08e39a912e7b6ce8146',
   [ChainId.MATTER]: '0x9bb46d5100d2db4608112026951c9c965b233f4d',
-  [ChainId.MATTERMAINNET]: ''
+  [ChainId.MATTERMAINNET]: '0xa7C9FeDe809b6af10dC52590804c69F40f6f8154'
 }
 
 export default function TabContentBridge() {
@@ -74,15 +74,15 @@ export default function TabContentBridge() {
   const { account, chainId, library } = useActiveWeb3React()
   const { showModal, hideModal } = useModal()
   const toggleWalletModal = useWalletModalToggle()
-  const depositAddress = depositAddressList[chainId ?? ChainId.MATTER]
+  const depositAddress = depositAddressList[chainId ?? ChainId.MATTERMAINNET]
   const { callback: depositeOnceCallback } = useCbridgeDepositeCallback(depositAddress)
-  const [fromToken, setFromToken] = useState(BAST_TOKEN[ChainId.MATTER])
-  const [toToken, setToToken] = useState(BAST_TOKEN[ChainId.GÖRLI])
+  const [fromToken, setFromToken] = useState(BAST_TOKEN[ChainId.MATTERMAINNET])
+  const [toToken, setToToken] = useState(BAST_TOKEN[ChainId.MAINNET])
   const [fromChain, setFromChain] = useState<Chain>(ChainList[0])
   const [toChain, setToChain] = useState<Chain>(ChainList[1])
 
   const walletIsCurrentChain = useMemo(() => chainId === fromChain?.id, [chainId, fromChain?.id])
-  const isETHER = useMemo(() => fromToken.chainId === ChainId.MATTER, [fromToken.chainId])
+  const isETHER = useMemo(() => fromToken.chainId === ChainId.MATTERMAINNET, [fromToken.chainId])
   const fromAmount = useMemo(() => tryParseAmount(value, fromToken), [fromToken, value])
   const ethBalance = useETHBalances([account || undefined])[account || 0]
   const nativeBalance = useCurrencyBalance(account || undefined, !isETHER ? fromToken : undefined)
@@ -164,7 +164,7 @@ export default function TabContentBridge() {
 
   const getActions = useCallback(() => {
     if (!account) {
-      return <Button onClick={toggleWalletModal}>Connect wallet</Button>
+      return <Button onClick={toggleWalletModal}>Connect Wallet</Button>
     }
     if (!walletIsCurrentChain) {
       return (
@@ -253,6 +253,8 @@ export default function TabContentBridge() {
           </Typography>
           <Typography fontWeight={500} fontSize={12}>
             {(fromAmount &&
+              fromBalance &&
+              fromBalance?.greaterThan(fromAmount) &&
               cbridgeFeeInfo.fees &&
               fromAmount?.greaterThan(cbridgeFeeInfo.fees) &&
               fromAmount?.subtract(cbridgeFeeInfo.fees).toSignificant()) ||

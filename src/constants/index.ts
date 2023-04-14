@@ -16,7 +16,7 @@ export const BAST_TOKEN: { [chainId in ChainId]: Token } = {
   [ChainId.MATTER]: new Token(ChainId.MATTER, '0x60d0769c4940cA58648C0AA34ecdf390a10F272e', 18, 'MATTER', 'Matter'),
   [ChainId.MATTERMAINNET]: new Token(
     ChainId.MATTERMAINNET,
-    '0x60d0769c4940cA58648C0AA34ecdf390a10F272e',
+    '0x0000000000000000000000000000000000000000',
     18,
     'MATTER',
     'Matter'

@@ -17,7 +17,7 @@ export function fetchCbridgeEstimateAmtResult(
   amt: string,
   is_pegged: boolean
 ) {
-  return get(`https://cbridge-v2-test.celer.network/v1/estimateAmt`, {
+  return get(`https://cbridge-prod2.celer.app/v2/estimateAmt`, {
     src_chain_id: fromChainId,
     dst_chain_id: toChainId,
     token_symbol: tokenSymbol,
