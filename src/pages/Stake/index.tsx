@@ -5,6 +5,7 @@ import NumericalCard from 'components/Card/NumericalCard'
 import { ReactComponent as MatterCircle } from 'assets/svg/stake_matter_circle.svg'
 import SmallButton from 'components/Button/SmallButton'
 import StakeInputModal, { StakeType } from './StakeInputModal'
+import B2StakeInputModal from './B2StakeInputModal'
 import StakeActionModal from './StakeActionModal'
 import { useStakeCallback, useStakingInfo } from 'hooks/useStake'
 import useModal from 'hooks/useModal'
@@ -14,14 +15,17 @@ import MessageBox from 'components/Modal/TransactionModals/MessageBox'
 import { useActiveWeb3React } from 'hooks'
 import { useWalletModalToggle } from 'state/application/hooks'
 import { CURRENT_SUPPORTED_CHAINS, Matter } from 'constants/index'
-import { useCurrencyBalance } from 'state/wallet/hooks'
 import { TokenAmount } from 'constants/token'
 import { triggerSwitchChain } from 'utils/triggerSwitchChain'
 import { ChainListMap } from 'constants/chain'
+import { useCurrencyBalance, useETHBalances } from 'state/wallet/hooks'
+import { useB2StakeCallback, useB2StakingInfo } from 'hooks/useB2Stake'
 
 export default function Stake() {
   const [depositModalOpen, setDepositModalOpen] = useState(false)
+  const [depositB2ModalOpen, setDepositB2ModalOpen] = useState(false)
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false)
+  const [withdrawB2ModalOpen, setWithdrawB2ModalOpen] = useState(false)
   const [compoundModalOpen, setCompoundModalOpen] = useState(false)
 
   const theme = useTheme()
@@ -30,15 +34,20 @@ export default function Stake() {
 
   const { chainId, account, library } = useActiveWeb3React()
   const { stakeCallback, unstakeCallback, compoundCallback } = useStakeCallback()
+  const { b2StakeCallback, b2UnstakeCallback } = useB2StakeCallback()
   const addTransaction = useTransactionAdder()
   const { apy, earned, stakedBalance, totalDeposited, totalStakedBalance } = useStakingInfo()
+  const { b2Apy, b2Earned, b2StakedBalance, b2TotalDeposited } = useB2StakingInfo()
 
   const matterBalance = useCurrencyBalance(account ?? undefined, Matter)
+  const b2MatterBalance = useETHBalances([account || undefined])[account || 0]
 
   const onDismiss = useCallback(() => {
     setDepositModalOpen(false)
     setWithdrawModalOpen(false)
     setCompoundModalOpen(false)
+    setDepositB2ModalOpen(false)
+    setWithdrawB2ModalOpen(false)
   }, [])
 
   const handleStake = useCallback(
@@ -61,6 +70,26 @@ export default function Stake() {
     [addTransaction, hideModal, showModal, stakeCallback, account]
   )
 
+  const handleB2Stake = useCallback(
+    (val: string | undefined, setHash: (hash: string) => void) => () => {
+      if (!b2StakeCallback || !val || !account) return
+      showModal(<TransacitonPendingModal />)
+      b2StakeCallback(val)
+        .then(r => {
+          hideModal()
+          setHash(r.hash)
+          const matterToken = new TokenAmount(Matter, val)
+          addTransaction(r, {
+            summary: `Stake ${matterToken.toExact()} MATTER`
+          })
+        })
+        .catch(e => {
+          showModal(<MessageBox type="error">{e.message}</MessageBox>)
+        })
+    },
+    [account, showModal, b2StakeCallback, hideModal, addTransaction]
+  )
+
   const handleUnStake = useCallback(
     (setHash: (hash: string) => void) => () => {
       if (!unstakeCallback) return
@@ -78,6 +107,25 @@ export default function Stake() {
         })
     },
     [addTransaction, hideModal, showModal, unstakeCallback]
+  )
+
+  const handleB2UnStake = useCallback(
+    (setHash: (hash: string) => void) => () => {
+      if (!b2UnstakeCallback) return
+      showModal(<TransacitonPendingModal />)
+      b2UnstakeCallback(b2StakedBalance)
+        .then(r => {
+          hideModal()
+          setHash(r.hash)
+          addTransaction(r, {
+            summary: `Unstake MATTER`
+          })
+        })
+        .catch(e => {
+          showModal(<MessageBox type="error">{e.message}</MessageBox>)
+        })
+    },
+    [addTransaction, b2StakedBalance, b2UnstakeCallback, hideModal, showModal]
   )
 
   const handleCompound = useCallback(
@@ -135,10 +183,146 @@ export default function Stake() {
                   </Typography>
                 </Box>
               </Box>
-              {/* <Box display="grid">
+            </Box>
+            <Box display="flex" gap="20px">
+              <Box display="grid" gap="8px">
+                <Typography fontWeight={700} fontSize={24}>
+                  Stake MATTER IN AntiMatter B2
+                </Typography>
+              </Box>
+            </Box>
+            <Box display="flex" gap="20px" flexDirection={{ md: 'row', xs: 'column' }}>
+              <NumericalCard title="APY" value={new Date().getTime() > 1637107200000 ? b2Apy : '--'} unit="%" gray />
+              <NumericalCard title="Total Staked" value={b2TotalDeposited} unit="Matter" gray />
+              <NumericalCard title="Total Value Deposited" value={b2TotalDeposited} unit="$" gray />
+            </Box>
+          </Box>
+        </Card>
+        <Box
+          display="grid"
+          gridTemplateColumns={{ md: '100%', lg: ' 2fr 1.5fr 1.5fr' }}
+          gap="20px"
+          flexWrap="wrap"
+          maxWidth="100%"
+          sx={{ width: '100%' }}
+        >
+          <NumericalCard title="MATTER Earned" value={b2Earned} unit="Matter" fontSize="44px" height="280px">
+            <>
+              <Box sx={{ position: 'absolute', right: '24px', bottom: '34px' }}>
+                {account ? (
+                  supportChain ? (
+                    <>
+                      {b2StakedBalance && +b2StakedBalance > 0 ? (
+                        <Box display="flex" gap="8px">
+                          <SmallButton
+                            sx={{ height: 44, width: 44, borderRadius: '12px', padding: 0 }}
+                            onClick={() => {
+                              setDepositB2ModalOpen(true)
+                            }}
+                          >
+                            <svg viewBox="0 0 10 10" width="10" height="10">
+                              <rect y="4" width="10" height="2" fill="white" />
+                              <rect x="6" width="10" height="2" transform="rotate(90 6 0)" fill="white" />
+                            </svg>
+                          </SmallButton>
+                          <SmallButton
+                            sx={{ height: 44, width: 44, borderRadius: '12px', padding: 0 }}
+                            onClick={() => {
+                              setWithdrawB2ModalOpen(true)
+                            }}
+                          >
+                            <svg viewBox="0 0 10 2" width="10" height="2">
+                              <rect width="10" height="2" fill="white" />
+                            </svg>
+                          </SmallButton>
+                        </Box>
+                      ) : (
+                        <SmallButton
+                          sx={{ height: 44, width: 108, borderRadius: '12px', padding: 0 }}
+                          onClick={() => {
+                            setDepositB2ModalOpen(true)
+                          }}
+                        >
+                          + Stake
+                        </SmallButton>
+                      )}
+                    </>
+                  ) : (
+                    <SmallButton onClick={switchToSupportChain}>
+                      Switch to {ChainListMap[currentSupportChain as number]?.symbol}
+                    </SmallButton>
+                  )
+                ) : (
+                  <SmallButton onClick={toggleWalletModal}>Connect</SmallButton>
+                )}
+              </Box>
+            </>
+          </NumericalCard>
+
+          <NumericalCard
+            title="My Wallet Balance"
+            value={b2MatterBalance !== undefined ? b2MatterBalance.toFixed(4) : '-'}
+            unit="Matter"
+            fontSize="44px"
+            height="280px"
+          />
+          <NumericalCard
+            title="My Staked Balance"
+            value={b2StakedBalance}
+            unit="Matter"
+            fontSize="44px"
+            height="280px"
+          />
+        </Box>
+      </Box>
+      <B2StakeInputModal
+        type={StakeType.DEPOSIT}
+        isOpen={depositB2ModalOpen}
+        onDismiss={onDismiss}
+        onAction={handleB2Stake}
+        balance={b2MatterBalance}
+      />
+      <StakeActionModal
+        title="Withdraw MATTER Tokens"
+        buttonActionText="Unstake"
+        buttonPendingText="Pending Confirmat..."
+        isOpen={withdrawB2ModalOpen}
+        onDismiss={onDismiss}
+        onAction={handleB2UnStake}
+        balance={b2StakedBalance}
+      />
+
+      <Box
+        display="grid"
+        alignContent="flex-start"
+        sx={{ minHeight: theme => `calc(100vh - ${theme.height.header})`, width: '100%' }}
+        gap="20px"
+      >
+        <Card>
+          <Box display="grid" padding="34px 24px 30px" gap="40px">
+            {/* <Box display="flex" justifyContent="space-between">
+              <Box display="flex" gap="20px">
+                <MatterCircle />
+                <Box display="grid" gap="8px">
+                  <Typography fontWeight={700} fontSize={24}>
+                    Stake MATTER
+                  </Typography>
+                  <Typography variant="inherit" color={theme.palette.text.secondary}>
+                    Stake MATTER and get exponentially growing returns!
+                  </Typography>
+                </Box>
+              </Box> */}
+            {/* <Box display="grid">
                 <Typography>04 h : 55 m : 02 s to next rebase</Typography>
                 <Typography sx={{ color: theme => theme.palette.primary.main }}>Get MATTER at a discount</Typography>
               </Box> */}
+            {/* </Box> */}
+            <Box display="flex" gap="20px">
+              <Box display="grid" gap="8px">
+                <Typography fontWeight={700} fontSize={24}>
+                  Stake MATTER IN ETH
+                </Typography>
+              </Box>
             </Box>
             <Box display="flex" gap="20px" flexDirection={{ md: 'row', xs: 'column' }}>
               <NumericalCard title="APY" value={new Date().getTime() > 1637107200000 ? apy : '--'} unit="%" gray />
@@ -198,6 +382,7 @@ export default function Stake() {
                         </Box>
                       ) : (
                         <SmallButton
+                          disabled
                           sx={{ height: 44, width: 108, borderRadius: '12px', padding: 0 }}
                           onClick={() => {
                             setDepositModalOpen(true)
@@ -237,7 +422,7 @@ export default function Stake() {
         balance={matterBalance}
       />
       <StakeActionModal
-        title="Withdraw sMATTER Tokens"
+        title="Withdraw MATTER Tokens"
         buttonActionText="Unstake"
         buttonPendingText="Pending Confirmat..."
         isOpen={withdrawModalOpen}

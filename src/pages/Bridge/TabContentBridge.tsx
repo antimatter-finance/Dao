@@ -9,7 +9,7 @@ import useModal from 'hooks/useModal'
 import TransactionSubmittedModal from 'components/Modal/TransactionModals/TransactiontionSubmittedModal'
 import MessageBox from 'components/Modal/TransactionModals/MessageBox'
 import { tryParseAmount } from 'utils/parseAmount'
-import { BAST_TOKEN } from '../../constants'
+import { BAST_TOKEN, CURRENT_TRANSFER_CHAINS } from '../../constants'
 import { useCurrencyBalance, useETHBalances } from 'state/wallet/hooks'
 import TransactionPendingModal from 'components/Modal/TransactionModals/TransactionPendingModal'
 import { ApprovalState, useApproveCallback } from 'hooks/useApproveCallback'
@@ -41,14 +41,6 @@ const ChainList = [
     id: ChainId.MATTERMAINNET,
     hex: '0x7c6'
   },
-  // {
-  //   icon: <ETH />,
-  //   logo: EthUrl,
-  //   symbol: 'Goerli',
-  //   name: 'Goerli Testnet',
-  //   id: ChainId.GÖRLI,
-  //   hex: '0x5'
-  // }
   {
     icon: <ETH />,
     logo: EthUrl,
@@ -74,15 +66,15 @@ export default function TabContentBridge() {
   const { account, chainId, library } = useActiveWeb3React()
   const { showModal, hideModal } = useModal()
   const toggleWalletModal = useWalletModalToggle()
-  const depositAddress = depositAddressList[chainId ?? ChainId.MATTERMAINNET]
+  const depositAddress = depositAddressList[chainId ?? CURRENT_TRANSFER_CHAINS.token0]
   const { callback: depositeOnceCallback } = useCbridgeDepositeCallback(depositAddress)
-  const [fromToken, setFromToken] = useState(BAST_TOKEN[ChainId.MATTERMAINNET])
-  const [toToken, setToToken] = useState(BAST_TOKEN[ChainId.MAINNET])
+  const [fromToken, setFromToken] = useState(BAST_TOKEN[CURRENT_TRANSFER_CHAINS.token0])
+  const [toToken, setToToken] = useState(BAST_TOKEN[CURRENT_TRANSFER_CHAINS.token1])
   const [fromChain, setFromChain] = useState<Chain>(ChainList[0])
   const [toChain, setToChain] = useState<Chain>(ChainList[1])
 
   const walletIsCurrentChain = useMemo(() => chainId === fromChain?.id, [chainId, fromChain?.id])
-  const isETHER = useMemo(() => fromToken.chainId === ChainId.MATTERMAINNET, [fromToken.chainId])
+  const isETHER = useMemo(() => fromToken.chainId === CURRENT_TRANSFER_CHAINS.token0, [fromToken.chainId])
   const fromAmount = useMemo(() => tryParseAmount(value, fromToken), [fromToken, value])
   const ethBalance = useETHBalances([account || undefined])[account || 0]
   const nativeBalance = useCurrencyBalance(account || undefined, !isETHER ? fromToken : undefined)
@@ -187,8 +179,13 @@ export default function TabContentBridge() {
         </Button>
       )
     const _cminInput = cbridgeFeeInfo.fees.toSignificant()
-    if (Number(_cminInput) > Number(fromAmount?.toSignificant())) {
-      return <Button disabled>Minimum amount is {_cminInput}</Button>
+    const _minInput = tryParseAmount('10', fromBalance.currency)?.toSignificant()
+    const maxInput = tryParseAmount('200000', fromBalance.currency)?.toSignificant()
+    if (Math.max(Number(_cminInput), Number(_minInput)) > Number(fromAmount?.toSignificant())) {
+      return <Button disabled>Minimum amount is {Math.max(Number(_cminInput), Number(_minInput))}</Button>
+    }
+    if (Number(fromAmount?.toSignificant()) > Number(maxInput)) {
+      return <Button disabled>Maximum amount is {maxInput}</Button>
     }
     if (approvalState !== ApprovalState.APPROVED) {
       if (approvalState === ApprovalState.PENDING) {
@@ -228,10 +225,10 @@ export default function TabContentBridge() {
 
   return (
     <Box display="flex">
-      <Box width="40%" height="100%">
+      <Box width="30%" height="100%">
         <ChainSwitch fromChain={fromChain} toChain={toChain} height={82} toSwitch={toSwitch} />
       </Box>
-      <Box padding="22px 32px" display="grid" gap="22px" width="60%">
+      <Box padding="22px 32px" display="grid" gap="22px" width="50%">
         <InputNumerical
           label="Amount"
           onMax={() => setValue(fromBalance?.toSignificant() || '')}
@@ -263,6 +260,48 @@ export default function TabContentBridge() {
           </Typography>
         </Box>
         {getActions()}
+        <Box
+          display={'flex'}
+          justifyContent={'center'}
+          alignItems={'center'}
+          gap={10}
+          sx={{
+            fontSize: 12,
+            '& a': {
+              textDecoration: 'none'
+            }
+          }}
+        >
+          <Typography fontWeight={500} fontSize={12}>
+            Powered by cBridge
+          </Typography>
+          <a href="https://cbridge.celer.network/" target="_blank" rel="noreferrer">
+            https://cbridge.celer.network/
+          </a>
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          width: '20%',
+          border: '1px solid #999',
+          borderRadius: '10px',
+          padding: 10,
+          height: 'fit-content',
+          mt: 20,
+          '& p': {
+            paddingBottom: 10
+          }
+        }}
+      >
+        <Typography fontWeight={500} fontSize={12}>
+          1.The amount of cross-chains cannot exceed 1,000,000 MATTER per address per 30mins.
+        </Typography>
+        <Typography fontWeight={500} fontSize={12}>
+          2. Maximum cross-chain amount is 200,000 MATTER per transaction.
+        </Typography>
+        <Typography fontWeight={500} fontSize={12}>
+          3. If your cross-chain amount is greater than 100,000 MATTER, the arrival time will be delayed by 60 minutes.
+        </Typography>
       </Box>
     </Box>
   )

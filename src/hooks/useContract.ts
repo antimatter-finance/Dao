@@ -3,6 +3,7 @@ import { abi as GOVERNANCE_ABI } from '../constants/abis/governance.json'
 import ANTIMATTER_ABI from '../constants/abis/antimatter.json'
 import ANTIMATTER_GOVERNANCE_ABI from '../constants/abis/governance.json'
 import ANTIMATTER_DAO_ABI from '../constants/abis/dao.json'
+import ANTIMATTER_STAKE_ABI from '../constants/abis/fixedRateStakePool.json'
 import REWARD_INVEST_ABI from '../constants/abis/reward_invest.json'
 import { useMemo } from 'react'
 import {
@@ -10,6 +11,7 @@ import {
   GOVERNANCE_ADDRESS,
   ANTIMATTER_GOVERNANCE_ADDRESS,
   ANTIMATTER_DAO_ADDRESS,
+  ANTIMATTER_B2_DAO_ADDRESS,
   REWARD_INVEST_ADDRESS
 } from '../constants'
 import ENS_PUBLIC_RESOLVER_ABI from '../constants/abis/ens-public-resolver.json'
@@ -107,7 +109,13 @@ export function useAntiMatterGovernanceContract(): Contract | null {
 }
 
 export function useAntiMatterDaoContract(): Contract | null {
-  return useContract(ANTIMATTER_DAO_ADDRESS, ANTIMATTER_DAO_ABI, true)
+  const { chainId } = useActiveWeb3React()
+  return useContract(chainId ? ANTIMATTER_DAO_ADDRESS[chainId] : undefined, ANTIMATTER_DAO_ABI, true)
+}
+
+export function useAntiMatterB2DaoContract(): Contract | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(chainId ? ANTIMATTER_B2_DAO_ADDRESS[chainId] : undefined, ANTIMATTER_STAKE_ABI, true)
 }
 
 export function useRewardInvestContract(): Contract | null {

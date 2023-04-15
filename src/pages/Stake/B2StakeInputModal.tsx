@@ -6,7 +6,7 @@ import InputNumerical from 'components/Input/InputNumerical'
 import OutlineButton from 'components/Button/OutlineButton'
 import ActionButton from 'components/Button/ActionButton'
 import { useApproveCallback, ApprovalState } from 'hooks/useApproveCallback'
-import { Matter, ANTIMATTER_DAO_ADDRESS } from 'constants/index'
+import { ANTIMATTER_B2_DAO_ADDRESS, Matter } from 'constants/index'
 import useModal from 'hooks/useModal'
 import TransactionSubmittedModal from 'components/Modal/TransactionModals/TransactiontionSubmittedModal'
 import TransacitonPendingModal from 'components/Modal/TransactionModals/TransactionPendingModal'
@@ -20,7 +20,7 @@ export enum StakeType {
   STAKE_REWARD
 }
 
-export default function StakeInputModal({
+export default function B2StakeInputModal({
   type,
   isOpen,
   onDismiss,
@@ -36,8 +36,8 @@ export default function StakeInputModal({
   const { chainId } = useActiveWeb3React()
   const [value, setValue] = useState('')
   const [approvalState, approveCallback] = useApproveCallback(
-    tryParseAmount(value, Matter),
-    (chainId && ANTIMATTER_DAO_ADDRESS[chainId]) || ''
+    balance,
+    (chainId && ANTIMATTER_B2_DAO_ADDRESS[chainId]) || undefined
   )
   const { showModal, hideModal } = useModal()
   const [pending, setPending] = useState(false)
@@ -63,7 +63,7 @@ export default function StakeInputModal({
         setHash('')
       }
     }
-  }, [hash, onDismiss, showModal, txn])
+  }, [hash, hideModal, onDismiss, showModal, txn])
 
   useEffect(() => {
     if (approvalState === ApprovalState.APPROVED) {

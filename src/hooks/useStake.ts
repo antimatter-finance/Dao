@@ -40,7 +40,7 @@ export function useStakingInfo() {
   const contract = useAntiMatterDaoContract()
   const args = useMemo(() => [account ?? undefined], [account])
 
-  const totalStakedBalanceRes = useTokenBalance(ANTIMATTER_DAO_ADDRESS, Matter)
+  const totalStakedBalanceRes = useTokenBalance((chainId && ANTIMATTER_DAO_ADDRESS[chainId]) || undefined, Matter)
 
   const apyRes = useSingleCallResult(contract, 'APR')
   const totalDepositedRes = useSingleCallResult(contract, 'TVL')

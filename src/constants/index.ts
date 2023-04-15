@@ -143,11 +143,34 @@ export const Matter = new Token(
   'Antimatter.Finance Governance Token'
 )
 
-export const ANTIMATTER_DAO_ADDRESS = '0xCB8429f22541E8F5cd8ea6c20BFFdcE7cDA65227'
+export const ANTIMATTER_DAO_ADDRESS: { [key in ChainId]: string } = {
+  [ChainId.MAINNET]: '0xCB8429f22541E8F5cd8ea6c20BFFdcE7cDA65227',
+  [ChainId.ROPSTEN]: '',
+  [ChainId.RINKEBY]: '',
+  [ChainId.KOVAN]: '',
+  [ChainId.GÖRLI]: '',
+  [ChainId.MATTER]: '',
+  [ChainId.MATTERMAINNET]: ''
+}
+
+export const ANTIMATTER_B2_DAO_ADDRESS: { [key in ChainId]: string } = {
+  [ChainId.MAINNET]: '',
+  [ChainId.ROPSTEN]: '',
+  [ChainId.RINKEBY]: '',
+  [ChainId.KOVAN]: '',
+  [ChainId.GÖRLI]: '',
+  [ChainId.MATTER]: '0x29e348a98F06267256412131902671f8fD2A8c38',
+  [ChainId.MATTERMAINNET]: ''
+}
 
 export const CURRENT_SUPPORTED_CHAINS = {
-  stake: [1],
-  reward: [1]
+  stake: [1, 1990, 20221],
+  reward: [1, 1990, 20221]
+}
+
+export const CURRENT_TRANSFER_CHAINS = {
+  token0: ChainId.MATTERMAINNET,
+  token1: ChainId.MAINNET
 }
 
 export const REWARD_INVEST_ADDRESS: { [key in ChainId]: string } = {
