@@ -203,7 +203,7 @@ export function useDualinvestDashboardData() {
 
   useEffect(() => {
     ;(async () => {
-      const res = await Axios.get('https://dualinvest-api.antimatter.finance/web/getDashboard')
+      const res = await Axios.get('https://dualinvest-api.antimatter.finance/web/getDashboard?chainId=56')
       const data = res.data.data
       setDualData({
         totalBtcDeposit: data?.totalBtcDeposit ? Number(data.totalBtcDeposit) : 0,
