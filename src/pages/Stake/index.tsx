@@ -20,6 +20,7 @@ import { triggerSwitchChain } from 'utils/triggerSwitchChain'
 import { ChainListMap } from 'constants/chain'
 import { useCurrencyBalance, useETHBalances } from 'state/wallet/hooks'
 import { useB2StakeCallback, useB2StakingInfo } from 'hooks/useB2Stake'
+import Divider from 'components/Divider'
 
 export default function Stake() {
   const [depositModalOpen, setDepositModalOpen] = useState(false)
@@ -291,6 +292,7 @@ export default function Stake() {
         onAction={handleB2UnStake}
         balance={b2StakedBalance}
       />
+      <Divider style={{ margin: '20px 0' }} />
 
       <Box
         display="grid"
@@ -341,7 +343,7 @@ export default function Stake() {
         >
           <NumericalCard title="MATTER Earned" value={earned} unit="Matter" fontSize="44px" height="280px">
             <>
-              {supportChain && earned && earned !== '0' && (
+              {supportChain && earned && earned !== '-' && (
                 <SmallButton
                   variant="outlined"
                   onClick={() => {
