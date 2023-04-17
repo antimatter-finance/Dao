@@ -13,6 +13,10 @@ export enum ChainId {
   MATTERMAINNET = 1990
 }
 
+export const NETWORK_CHAIN_ID: ChainId = process.env.REACT_APP_CHAIN_ID
+  ? parseInt(process.env.REACT_APP_CHAIN_ID)
+  : ChainId.MAINNET
+
 export const ChainList = [
   {
     icon: <ETH />,

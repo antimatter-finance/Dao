@@ -12,11 +12,12 @@ import usePrevious from 'hooks/usePrevious'
 import { ApplicationModal } from 'state/application/actions'
 import { useModalOpen, useWalletModalToggle } from 'state/application/hooks'
 import AccountDetails from 'components/Modal/WalletModal/AccountDetails'
-
+import { ChainId, NETWORK_CHAIN_ID, SUPPORTED_NETWORKS } from '../../../constants/chain'
 import Modal from '../index'
 import Option from './Option'
 import PendingView from './PendingView'
 import OutlineButton from 'components/Button/OutlineButton'
+import Button from 'components/Button/Button'
 import useBreakpoint from 'hooks/useBreakpoint'
 
 const WALLET_VIEWS = {
@@ -195,6 +196,26 @@ export default function WalletModal({
               ? 'Please connect to the appropriate Ethereum network.'
               : 'Error connecting. Try refreshing the page.'}
           </Box>
+          {window.ethereum && window.ethereum.isMetaMask && (
+            <Button
+              onClick={() => {
+                const id = Object.values(ChainId).find(val => val === NETWORK_CHAIN_ID)
+                if (!id) {
+                  return
+                }
+                const params = SUPPORTED_NETWORKS[id as ChainId]
+                params?.nativeCurrency.symbol === 'ETH'
+                  ? window.ethereum?.request?.({
+                      method: 'wallet_switchEthereumChain',
+                      params: [{ chainId: params.chainId }, account]
+                    })
+                  : window.ethereum?.request?.({ method: 'wallet_addEthereumChain', params: [params, account] })
+              }}
+            >
+              Connect to{' '}
+              {SUPPORTED_NETWORKS[NETWORK_CHAIN_ID] ? SUPPORTED_NETWORKS[NETWORK_CHAIN_ID]?.chainName : 'ETH'}
+            </Button>
+          )}
         </>
       )
     }

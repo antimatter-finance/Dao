@@ -11,12 +11,11 @@ import { CurrencyAmount, Token } from 'constants/token'
 export function useB2StakeCallback(): {
   b2StakeCallback: undefined | ((val: string) => Promise<any>)
   b2UnstakeCallback: undefined | ((val: string) => Promise<any>)
+  b2GetStakeRewardCallback: undefined | (() => Promise<any>)
 } {
   const { account, chainId } = useActiveWeb3React()
   const contract = useAntiMatterB2DaoContract()
-  if (!account) {
-    throw new Error('Unexpected error. account')
-  }
+
   const stake = useCallback(
     (val: string): Promise<any> => {
       return contract?.stakeEth({
@@ -43,12 +42,17 @@ export function useB2StakeCallback(): {
     [account, chainId, contract]
   )
 
+  const getStakeReward = useCallback(() => {
+    return contract?.getReward()
+  }, [contract])
+
   const res = useMemo(() => {
     return {
       b2StakeCallback: stake,
-      b2UnstakeCallback: unstake
+      b2UnstakeCallback: unstake,
+      b2GetStakeRewardCallback: getStakeReward
     }
-  }, [stake, unstake])
+  }, [getStakeReward, stake, unstake])
 
   return res
 }

@@ -28,6 +28,7 @@ export default function Stake() {
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false)
   const [withdrawB2ModalOpen, setWithdrawB2ModalOpen] = useState(false)
   const [compoundModalOpen, setCompoundModalOpen] = useState(false)
+  const [claimModalOpen, setClaimModalOpen] = useState(false)
 
   const theme = useTheme()
   const { showModal, hideModal } = useModal()
@@ -35,7 +36,7 @@ export default function Stake() {
 
   const { chainId, account, library } = useActiveWeb3React()
   const { stakeCallback, unstakeCallback, compoundCallback } = useStakeCallback()
-  const { b2StakeCallback, b2UnstakeCallback } = useB2StakeCallback()
+  const { b2StakeCallback, b2UnstakeCallback, b2GetStakeRewardCallback } = useB2StakeCallback()
   const addTransaction = useTransactionAdder()
   const { apy, earned, stakedBalance, totalDeposited, totalStakedBalance } = useStakingInfo()
   const { b2Apy, b2Earned, b2StakedBalance, b2TotalDeposited } = useB2StakingInfo()
@@ -49,6 +50,7 @@ export default function Stake() {
     setCompoundModalOpen(false)
     setDepositB2ModalOpen(false)
     setWithdrawB2ModalOpen(false)
+    setClaimModalOpen(false)
   }, [])
 
   const handleStake = useCallback(
@@ -110,6 +112,25 @@ export default function Stake() {
     [addTransaction, hideModal, showModal, unstakeCallback]
   )
 
+  const handleClaimReward = useCallback(
+    (setHash: (hash: string) => void) => () => {
+      if (!b2GetStakeRewardCallback) return
+      showModal(<TransacitonPendingModal />)
+      b2GetStakeRewardCallback()
+        .then(r => {
+          hideModal()
+          setHash(r.hash)
+          addTransaction(r, {
+            summary: `Claim Reward`
+          })
+        })
+        .catch(e => {
+          showModal(<MessageBox type="error">{e.message}</MessageBox>)
+        })
+    },
+    [addTransaction, b2GetStakeRewardCallback, hideModal, showModal]
+  )
+
   const handleB2UnStake = useCallback(
     (setHash: (hash: string) => void) => () => {
       if (!b2UnstakeCallback) return
@@ -164,12 +185,7 @@ export default function Stake() {
 
   return (
     <>
-      <Box
-        display="grid"
-        alignContent="flex-start"
-        sx={{ minHeight: theme => `calc(100vh - ${theme.height.header})`, width: '100%' }}
-        gap="20px"
-      >
+      <Box display="grid" alignContent="flex-start" sx={{ width: '100%' }} gap="20px">
         <Card>
           <Box display="grid" padding="34px 24px 30px" gap="40px">
             <Box display="flex" justifyContent="space-between">
@@ -208,6 +224,37 @@ export default function Stake() {
           sx={{ width: '100%' }}
         >
           <NumericalCard title="MATTER Earned" value={b2Earned} unit="Matter" fontSize="44px" height="280px">
+            <>
+              <Box sx={{ position: 'absolute', right: '24px', bottom: '90px' }}>
+                {supportChain && b2Earned && b2Earned !== '0' && (
+                  <SmallButton
+                    onClick={() => {
+                      setClaimModalOpen(true)
+                    }}
+                    sx={{
+                      position: 'absolute',
+                      right: '0px',
+                      top: '11px',
+                      width: 108,
+                      height: 44,
+                      borderRadius: '12px'
+                    }}
+                  >
+                    Claim
+                  </SmallButton>
+                )}
+              </Box>
+            </>
+          </NumericalCard>
+
+          <NumericalCard
+            title="My Wallet Balance"
+            value={b2MatterBalance !== undefined ? b2MatterBalance.toFixed(4) : '-'}
+            unit="Matter"
+            fontSize="44px"
+            height="280px"
+          />
+          <NumericalCard title="My Staked Balance" value={b2StakedBalance} unit="Matter" fontSize="44px" height="280px">
             <>
               <Box sx={{ position: 'absolute', right: '24px', bottom: '34px' }}>
                 {account ? (
@@ -259,21 +306,6 @@ export default function Stake() {
               </Box>
             </>
           </NumericalCard>
-
-          <NumericalCard
-            title="My Wallet Balance"
-            value={b2MatterBalance !== undefined ? b2MatterBalance.toFixed(4) : '-'}
-            unit="Matter"
-            fontSize="44px"
-            height="280px"
-          />
-          <NumericalCard
-            title="My Staked Balance"
-            value={b2StakedBalance}
-            unit="Matter"
-            fontSize="44px"
-            height="280px"
-          />
         </Box>
       </Box>
       <B2StakeInputModal
@@ -292,14 +324,18 @@ export default function Stake() {
         onAction={handleB2UnStake}
         balance={b2StakedBalance}
       />
+      <StakeActionModal
+        title="MATTER Claim"
+        buttonActionText="Comfirm"
+        buttonPendingText="Confirming"
+        isOpen={claimModalOpen}
+        onDismiss={onDismiss}
+        onAction={handleClaimReward}
+        balance={b2Earned}
+      />
       <Divider style={{ margin: '20px 0' }} />
 
-      <Box
-        display="grid"
-        alignContent="flex-start"
-        sx={{ minHeight: theme => `calc(100vh - ${theme.height.header})`, width: '100%' }}
-        gap="20px"
-      >
+      <Box display="grid" alignContent="flex-start" sx={{ width: '100%' }} gap="20px">
         <Card>
           <Box display="grid" padding="34px 24px 30px" gap="40px">
             {/* <Box display="flex" justifyContent="space-between">
