@@ -159,7 +159,7 @@ export const ANTIMATTER_B2_DAO_ADDRESS: { [key in ChainId]: string } = {
   [ChainId.RINKEBY]: '',
   [ChainId.KOVAN]: '',
   [ChainId.GÖRLI]: '',
-  [ChainId.MATTER]: '0x29e348a98F06267256412131902671f8fD2A8c38',
+  [ChainId.MATTER]: '0x7E735Fe09baE1E294A943fBa8CF7d1f5876B8feF',
   [ChainId.MATTERMAINNET]: ''
 }
 
