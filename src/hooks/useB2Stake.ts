@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react'
+import { useMemo, useCallback, useState, useEffect } from 'react'
 // import JSBI from 'jsbi'
 import { useAntiMatterB2DaoContract } from './useContract'
 import { useSingleCallResult } from 'state/multicall/hooks'
@@ -6,7 +6,7 @@ import { useActiveWeb3React } from 'hooks'
 import { ANTIMATTER_B2_DAO_ADDRESS, Matter } from 'constants/index'
 import { parseBalance, tryParseAmount } from 'utils/parseAmount'
 import { CurrencyAmount, Token } from 'constants/token'
-// import { useETHBalances } from 'state/wallet/hooks'
+import { Axios } from 'utils/axios'
 
 export function useB2StakeCallback(): {
   b2StakeCallback: undefined | ((val: string) => Promise<any>)
@@ -58,13 +58,16 @@ export function useB2StakeCallback(): {
 }
 
 export function useB2StakingInfo() {
+  const [matterPrice, setMatterPrice] = useState(0)
   const { account } = useActiveWeb3React()
   const contract = useAntiMatterB2DaoContract()
   const args = useMemo(() => [account ?? undefined], [account])
 
-  // const totalStakedBalanceRes = useETHBalances([(chainId && ANTIMATTER_B2_DAO_ADDRESS[chainId]) || undefined])[
-  //   (chainId && ANTIMATTER_B2_DAO_ADDRESS[chainId]) || 0
-  // ]
+  useEffect(() => {
+    Axios.get('https://api.antimatter.finance/app/getCoinPrice').then((res: any) => {
+      setMatterPrice(res.data.data.matter_price)
+    })
+  }, [])
 
   const apyRes = useSingleCallResult(contract, 'rewardRate')
   const totalDepositedRes = useSingleCallResult(contract, 'totalSupply')
@@ -80,9 +83,11 @@ export function useB2StakingInfo() {
         ? CurrencyAmount.ether(totalDepositedRes?.result?.[0]).toSignificant()
         : '-',
       b2Earned: earnedRes?.result?.[0] ? parseBalance(earnedRes.result?.[0], Matter, 4) : '-',
-      b2StakedBalance: earnedRes?.result?.[0] ? parseBalance(stakedBalanceRes.result?.[0], Matter, 4) : '-'
-      // b2TotalStakedBalance: totalStakedBalanceRes ? parseFloat(totalStakedBalanceRes.toSignificant()).toFixed(0) : '-'
+      b2StakedBalance: earnedRes?.result?.[0] ? parseBalance(stakedBalanceRes.result?.[0], Matter, 4) : '-',
+      b2TotalStakedBalance: totalDepositedRes?.result?.[0]
+        ? (+CurrencyAmount.ether(totalDepositedRes?.result?.[0]).toSignificant() * matterPrice).toFixed(2).toString()
+        : '-'
     }
-  }, [apyRes?.result, earnedRes.result, stakedBalanceRes.result, totalDepositedRes?.result])
+  }, [apyRes?.result, earnedRes.result, matterPrice, stakedBalanceRes.result, totalDepositedRes?.result])
   return res
 }

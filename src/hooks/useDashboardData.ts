@@ -194,11 +194,9 @@ export function useDualinvestDashboardData() {
   }, [library])
 
   useEffect(() => {
-    Axios.get('https://openapi.debank.com/v1/token?chain_id=eth&id=0x2260fac5e5542a773aa44fbcfedf7c193bc2c599').then(
-      (res: any) => {
-        setBtcPrice(res.data.price)
-      }
-    )
+    Axios.get('https://api.antimatter.finance/app/getCoinPrice').then((res: any) => {
+      setBtcPrice(res.data.data.btc_price)
+    })
   }, [])
 
   useEffect(() => {
