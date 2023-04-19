@@ -160,7 +160,7 @@ export const ANTIMATTER_B2_DAO_ADDRESS: { [key in ChainId]: string } = {
   [ChainId.KOVAN]: '',
   [ChainId.GÖRLI]: '',
   [ChainId.MATTER]: '0x7E735Fe09baE1E294A943fBa8CF7d1f5876B8feF',
-  [ChainId.MATTERMAINNET]: ''
+  [ChainId.MATTERMAINNET]: '0x591a2caB451b123AAe8CF084f3de994561AEE894'
 }
 
 export const CURRENT_SUPPORTED_CHAINS = {

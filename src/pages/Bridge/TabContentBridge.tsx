@@ -294,7 +294,7 @@ export default function TabContentBridge() {
         }}
       >
         <Typography fontWeight={500} fontSize={12}>
-          1.The amount of cross-chains cannot exceed 1,000,000 MATTER per address per 30mins.
+          1.The volume of cross-chain transactions cannot exceed 1,000,000 MATTER per adress per 30mins.
         </Typography>
         <Typography fontWeight={500} fontSize={12}>
           2. Maximum cross-chain amount is 200,000 MATTER per transaction.
