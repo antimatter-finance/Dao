@@ -68,6 +68,14 @@ export function useB2StakingInfo() {
       setMatterPrice(res.data.data.matter_price)
     })
   }, [])
+  const begin = useSingleCallResult(contract, 'begin')?.result?.[0]?.toString()
+  const canStake = useMemo(() => {
+    const now = new Date().getTime()
+    if (!begin) {
+      return false
+    }
+    return Number(begin) * 1000 > now ? false : true
+  }, [begin])
 
   const apyRes = useSingleCallResult(contract, 'rewardRate')
   const totalDepositedRes = useSingleCallResult(contract, 'totalSupply')
@@ -78,6 +86,7 @@ export function useB2StakingInfo() {
     // const USDC = new Token(chainId ?? 1, '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', 6, 'USDC')
 
     return {
+      canStake,
       b2Apy: apyRes?.result?.[0] ? (+parseBalance(apyRes?.result?.[0], Matter) * 100).toFixed(2).toString() : '-',
       b2TotalDeposited: totalDepositedRes?.result?.[0]
         ? CurrencyAmount.ether(totalDepositedRes?.result?.[0]).toSignificant()
@@ -88,6 +97,6 @@ export function useB2StakingInfo() {
         ? (+CurrencyAmount.ether(totalDepositedRes?.result?.[0]).toSignificant() * matterPrice).toFixed(2).toString()
         : '-'
     }
-  }, [apyRes?.result, earnedRes.result, matterPrice, stakedBalanceRes.result, totalDepositedRes?.result])
+  }, [apyRes?.result, canStake, earnedRes.result, matterPrice, stakedBalanceRes.result, totalDepositedRes?.result])
   return res
 }

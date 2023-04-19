@@ -164,7 +164,7 @@ export const ANTIMATTER_B2_DAO_ADDRESS: { [key in ChainId]: string } = {
 }
 
 export const CURRENT_SUPPORTED_CHAINS = {
-  stake: [1, 1990, 20221],
+  stake: [1990, 1, 20221],
   reward: [1, 1990, 20221]
 }
 

@@ -38,7 +38,7 @@ export default function Stake() {
   const { b2StakeCallback, b2UnstakeCallback, b2GetStakeRewardCallback } = useB2StakeCallback()
   const addTransaction = useTransactionAdder()
   const { apy, earned, stakedBalance, totalDeposited, totalStakedBalance } = useStakingInfo()
-  const { b2Apy, b2Earned, b2StakedBalance, b2TotalDeposited, b2TotalStakedBalance } = useB2StakingInfo()
+  const { canStake, b2Apy, b2Earned, b2StakedBalance, b2TotalDeposited, b2TotalStakedBalance } = useB2StakingInfo()
 
   const matterBalance = useCurrencyBalance(account ?? undefined, Matter)
   const b2MatterBalance = useETHBalances([account || undefined])[account || 0]
@@ -433,6 +433,7 @@ export default function Stake() {
                           ) : (
                             <SmallButton
                               sx={{ height: 44, width: 108, borderRadius: '12px', padding: 0 }}
+                              disabled={!canStake}
                               onClick={() => {
                                 setDepositB2ModalOpen(true)
                               }}
@@ -442,9 +443,7 @@ export default function Stake() {
                           )}
                         </>
                       ) : (
-                        <SmallButton onClick={switchToSupportChain}>
-                          Switch to {ChainListMap[currentSupportChain as number]?.symbol}
-                        </SmallButton>
+                        <SmallButton onClick={switchToSupportChain}>Switch to B2</SmallButton>
                       )
                     ) : (
                       <SmallButton onClick={toggleWalletModal}>Connect</SmallButton>
