@@ -80,7 +80,7 @@ export default function Bridge() {
       </Card>
       <Card width="100%">
         <Box padding="32px 24px">
-          <Tabs titles={['Brige']} contents={[<TabContentBridge key={0} />, <TabContentStake key={1} />]} />
+          <Tabs titles={['Bridge']} contents={[<TabContentBridge key={0} />, <TabContentStake key={1} />]} />
         </Box>
       </Card>
     </Box>
