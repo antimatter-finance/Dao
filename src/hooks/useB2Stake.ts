@@ -91,8 +91,8 @@ export function useB2StakingInfo() {
       b2TotalDeposited: totalDepositedRes?.result?.[0]
         ? CurrencyAmount.ether(totalDepositedRes?.result?.[0]).toSignificant()
         : '-',
-      b2Earned: earnedRes?.result?.[0] ? parseBalance(earnedRes.result?.[0], Matter, 4) : '-',
-      b2StakedBalance: earnedRes?.result?.[0] ? parseBalance(stakedBalanceRes.result?.[0], Matter, 4) : '-',
+      b2Earned: earnedRes?.result?.[0] ? parseBalance(earnedRes.result?.[0], Matter, 6) : '-',
+      b2StakedBalance: earnedRes?.result?.[0] ? parseBalance(stakedBalanceRes.result?.[0], Matter, 6) : '-',
       b2TotalStakedBalance: totalDepositedRes?.result?.[0]
         ? (+CurrencyAmount.ether(totalDepositedRes?.result?.[0]).toSignificant() * matterPrice).toFixed(2).toString()
         : '-'
